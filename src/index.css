@@ -14,7 +14,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fbfbff;
+  background: linear-gradient(
+    225deg,
+    hsla(198, 82%, 23%, 1) 0%,
+    hsla(140, 71%, 44%, 1) 100%
+  );
 }
 
 .App {
@@ -120,4 +124,10 @@ body {
   border: none;
   outline: none;
   cursor: pointer;
+}
+.counter {
+  background-color: #20bf55;
+  color: #fff;
+  padding: 1px 15px;
+  border-radius: 10px;
 }

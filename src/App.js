@@ -3,16 +3,26 @@ import './index.css';
 
 function App() {
   const [todos, setTodos] = useState([]);
+  const [todoCount, setTodoCount] = useState(0);
+  const [todoDelete, setTodoDelete] = useState(0);
+  const filterOptions = ['All', 'Completed', 'Deleted'];
+
+  function handleDeleteItem(id) {
+    setTodos(items => items.filter(item => item.id !== id));
+    setTodoDelete(prevCount => prevCount + 1);
+    setTodoCount(prevCount => prevCount - 1); // Decrement todoCount by 1 when item is deleted
+  }
 
   function handleAddItem(newTask) {
     setTodos(prevTodos => [...prevTodos, newTask]);
+    setTodoCount(prevCount => prevCount + 1); // Increment todoCount by 1 when item is added
   }
 
   return (
     <div className="App">
       <TopBar onAddItem={handleAddItem} />
-      <Menu />
-      <TodoList todos={todos} />
+      <Menu todoCount={todoCount} todoDelete={todoDelete} filterOptions={filterOptions} />
+      <TodoList todos={todos} onDelete={handleDeleteItem} />
     </div>
   );
 }
@@ -24,6 +34,7 @@ function TopBar({ onAddItem }) {
     e.preventDefault();
     if (!task.trim()) return; // Prevent adding empty task
     const newTask = {
+      id: Math.floor(Math.random() * 10000),
       task,
       completed: false
     };
@@ -48,35 +59,41 @@ function TopBar({ onAddItem }) {
   );
 }
 
-function Menu() {
-  const filterOptions = ['All', 'Completed', 'Deleted'];
-
+function Menu({ todoCount, todoDelete, filterOptions }) {
   return (
     <ul className='menu-list'>
-      {filterOptions.map(item => (
-        <li className='menu-item' key={item}>{item}</li>
+      {filterOptions.map((item, index) => (
+        <li className='menu-item' key={item}>
+          {item + ' '}
+          {index === 0 && <Count value={todoCount} />}
+          {index === 2 && <Count value={todoDelete} />}
+        </li>
       ))}
     </ul>
   );
 }
 
-function TodoList({ todos }) {
+function TodoList({ todos, onDelete }) {
   return (
     <ul className="todo-list">
       {todos.map((todo, index) => (
-        <Todo key={index} todo={todo} />
+        <Todo key={index} todo={todo} onDelete={onDelete} />
       ))}
     </ul>
   );
 }
 
-function Todo({ todo }) {
+function Todo({ todo, onDelete }) {
   return (
     <li className="todo-item">
-      <span> {todo.task}</span>
-      <button><img style={{ width: '25px', height: '25px' }} src='close-circle-line.svg' alt='delete' /></button>
+      <span>{todo.task}</span>
+      <button onClick={() => onDelete(todo.id)}><img style={{ width: '25px', height: '25px' }} src='close-circle-line.svg' alt='delete' /></button>
     </li>
   );
+}
+
+function Count({ value }) {
+  return <span className='counter'>{value}</span>;
 }
 
 export default App;
